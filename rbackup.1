@@ -1,0 +1,54 @@
+.TH rbackup 1 "Networking Commands"
+.SH NAME
+rbackup - remote backup utility
+.SH SYNOPSIS
+rbackup
+.I -v directorypath
+.SH DESCRIPTION
+This utility does remote backups using the
+.IR rsync (1)
+utility, maintaining timestamped snapshots of past versions.  Unix
+hardlinks are used in order to minimize diskspace requirements.
+.PP
+A directory pathname may optionally be given on the commandline, in
+which case the utility will change to that directory before proceeding.
+.PP
+The directory in which the utility runs must contain a configuration
+file called
+.IR whence ,
+which contains a specification of the remote source directory, eg.
+"foobar:/home/user/stuff/" as per rsync's naming of remote directories.
+This file's contents actually form part of the rsync commandline that
+rbackup will generate, so it can optionally contain exclusions, inclusions,
+and the like.
+Note that this utility supports only pulling, not pushing, since backups
+should always be done on the more-trusted host.
+.PP
+After rbackup has run, the directory will contain a subdirectory called
+.IR current ,
+with the most recent snapshot, and subdirectories named in the form
+.IR YYYYMMDD-HHMM-foo ,
+containing older snapshots.  The most recent dated subdirectory will be
+a duplicate of the current one.  See
+.IR rpurge (1)
+for a utility to do automated cleanups.
+.PP
+Note that starting with version 1.7, if the directory has a subdirectory
+named
+.IR old ,
+then the snapshot subdirectories will be placed in it rather than in the
+parent directory.
+This feature allows you to make a single clean exclusion when backing up
+the machine containing the rbackup respository and only wanting to put
+the currentmost on tape or CDROM.
+.SH OPTIONS
+.TP
+.B -v
+Output verboseness to STDERR.
+.SH SEE ALSO
+.IR rsync (1),
+.IR rpurge (1)
+.SH AUTHOR
+Anthony de Boer <rbackup@leftmind.net>
+.PP
+http://www.leftmind.net/projects/rbackup/

@@ -1,0 +1,70 @@
+#!/usr/bin/perl -w
+
+#    rbackup - do backups over rsync
+#
+#    Copyright (C) 2000-2003 Anthony de Boer
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of version 2 of the GNU General Public License as
+#    published by the Free Software Foundation.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+use strict;
+use vars qw($opt_v);
+require 'getopts.pl';
+&Getopts('v') || die "Usage: [-v] [dir]\n";
+
+my $dir = shift(@ARGV) || '.';
+chdir($dir) || die "Cannot cd $dir: $!\n";
+
+open(W, "whence") || die "Cannot open $dir\/whence: $!\n";
+undef($/);
+my @whence = split(/\s+/, <W>);
+close(W);
+
+my ($sec,$min,$hour,$mday,$mon,$year,undef,undef,undef) = localtime(time);
+my $when = sprintf("%04d%02d%02d-%02d%02d-%02d%d", $year+1900, $mon+1, $mday, $hour, $min, $sec, $$);
+
+$when = 'old/' . $when if -d 'old';
+
+mkdir ($when, 0755) || die "Cannot mkdir $when: $!\n";
+-d 'current' || mkdir ('current', 0755) || die "Cannot mkdir current: $!\n";
+chdir('current') || die "Cannot cd current: $!\n";
+
+if (open(RH, "-|")) {
+	while(<RH>) {
+		print STDERR ":: $_" if $_ && ! /send_files failed to open.*No such file or directory/;
+		}
+	close(RH) || die "Rsync failed.\n";
+	}
+else {
+	open(STDERR, '>&STDOUT') || die "Cannot dup stdout: $!\n";
+	my @rcmd = qw/rsync -essh -a --delete/;
+	push (@rcmd, '-v') if $opt_v;
+	push (@rcmd, @whence, './');
+	print STDERR join(' ', '+', @rcmd), "\n" if $opt_v;
+	exec(@rcmd);
+	die "Failed to exec rsync: $!\n";
+	}
+
+if (open(STDIN, "-|")) {
+	my @ccmd = (qw/cpio -pdlm0 --quiet/, "..\/$when");
+	print STDERR join(' ', '+', @ccmd), "\n" if $opt_v;
+	system(@ccmd) && die "Cpio failed.\n";
+	close(STDIN) || die "Find failed.\n";
+	}
+else {
+	print STDERR "+ find -print0\n" if $opt_v;
+	exec(qw/find -print0/);
+	die "Failed to exec find: $!\n";
+	}
+
+exit(0);

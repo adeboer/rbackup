@@ -1,0 +1,46 @@
+.TH rpurge 1 "Networking Commands"
+.SH NAME
+rpurge - remote backup purge utility
+.SH SYNOPSIS
+rpurge
+.I -v -pNN directorypath
+.SH DESCRIPTION
+This utility purges remote backups done using
+.IR rbackup (1).
+.PP
+A directory pathname may optionally be given on the commandline, in
+which case the utility will change to that directory before proceeding.
+.PP
+This utility scans its working directory for
+subdirectories whose names match the form
+.IR YYYYMMDD-HHMM* ,
+divides them into groups according to the base 2 logarithm of their age
+in seconds, and keeps only the oldest in each group.  In other words,
+you keep one backup between 2^N and 2^(N+1) seconds old, one between
+2^(N+1) and 2^(N+2), and so forth.  Nonmatching files (especially the
+.I current
+and
+.I whence
+files) will be ignored.
+.PP
+If the working directory has a subdirectory named
+.IR old ,
+then rpurge will descend into it and do its work there.  Note that if this
+feature is used, all snapshots must be moved there or they would never be
+considered for purging.
+.SH OPTIONS
+.TP
+.B -v
+Output verboseness to STDERR.
+.TP
+.B -p SECONDS
+Sets the number of seconds that an empty backup subdirectory is allowed
+to live; default is 7200 (two hours).  This is significant in case
+rbackup is still running; if an older empty directory is found it is
+assumed that rbackup failed that time and the directory is removed.
+.SH SEE ALSO
+.IR rbackup (1)
+.SH AUTHOR
+Anthony de Boer <rbackup@leftmind.net>
+.PP
+http://www.leftmind.net/projects/rbackup/

@@ -1,0 +1,1 @@
+cp ./rbackup ./rpurge /usr/local/bin/

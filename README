@@ -1,0 +1,74 @@
+Welcome to rbackup, a script to do backups over rsync.
+
+This script is designed for a scenario in which the local machine is more
+trusted than the remote one; typically the local one might be the one with
+the tape drive, and/or the one that isn't running the Internet service
+that's being backed up and is less likely to get cracked.
+
+This does a "pull" of a directory tree using the rsync(1) tool and creates
+version directories so that any particular snapshot (eg. the one before
+things went pear-shaped) can be used.  To save disk space, identical files
+are hardlinked across version directories.  This makes use of an rsync
+behaviour whereby a new file is built and relinked in place of the original
+rather than modifying the original in place.
+
+Yes, recent releases of rsync have a --backup-dir option, but it serves
+only to put old versions of files in a target directory and doesn't make
+it possible to grab a consistent past snapshot of the directory tree (eg.
+there's no tracking of when a file first appeared).
+
+To run this, you need to create a backup target directory containing:
+
+  - a subdirectory called "current", which will be the rsync target and
+  will contain the most current snapshot.
+
+  - a file called "whence" which typically contains a single line saying
+  "server.example.net:stuffdir/" or such, as the "from" argument to rsync.
+  This may be preceded by additional rsync options (eg. includes/excludes).
+
+Additional directories will be created, named in the format YYMMDD-HHMM,
+containing snapshots at times in the past when rbackup was run.
+
+Rbackup takes a single commandline option, the pathname to the backup
+directory.
+
+GNU find(1) and cpio(1) are assumed; is anyone still using proprietary
+versions?
+
+Doing ssh from cron and not having it barf wanting a passphrase is left
+as an exercise to the reader.
+
+Homepage should remain <http://www.leftmind.net/projects/rbackup/>.
+
+This program was initially designed to backup up one of my home machines
+(the web/news/mailserver) to the other box with the tapedrive (the
+backupserver), but is distributed due to indications it might be more
+generally useful.
+
+Thanks to Kai Henningsen, of the .de branch of the Scary Devil Monastery,
+for prompting me to put this distribution together.
+
+Special thanks to Andrew Tridgell for doing rsync(1) in the first place.
+
+Legalese:
+
+#    Copyright (C) 2000,2001,2003 Anthony de Boer
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of version 2 of the GNU General Public License as
+#    published by the Free Software Foundation.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+I'm not including the usual "either version 2 of the License, or (at your
+option) any later version" text since I want to reserve the chance  to
+read version 3 before using it, just to be sure it doesn't promise free
+phone support or sexual favours from the program's author.
+

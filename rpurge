@@ -1,0 +1,85 @@
+#!/usr/bin/perl -w
+
+#    rpurge - expire rbackup backups
+#
+#    Copyright (C) 2001,2003 Anthony de Boer
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of version 2 of the GNU General Public License as
+#    published by the Free Software Foundation.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+use strict;
+use POSIX;
+use vars qw($opt_p $opt_v);
+require 'getopts.pl';
+
+&Getopts('p:v') || die "Usage: [-p PROTECT] [-v] [dir]\n";
+
+my $dir = shift(@ARGV) || '.';
+chdir($dir) || die "Cannot cd $dir: $!\n";
+
+my $now = time;
+my @toss;
+my %kfile;
+my %kage;
+
+$opt_p = 7200 unless $opt_p;
+
+if (-d 'old') {
+	chdir('old') || die "Cannot cd into \'old\': $!\n";
+	}
+
+opendir(D, '.') || die "opendir .";
+for my $f (readdir(D)) {
+	next unless $f =~ /^(\d\d\d\d)(\d\d)(\d\d)\-(\d\d)(\d\d)[\d\-]*$/;
+	my @targ = (0, $5, $4, $3, $2 - 1, $1 - 1900);
+	my $ctime = POSIX::mktime(@targ);
+	my $isdst = (localtime($ctime))[8];
+	$ctime = POSIX::mktime(@targ, 0, 0, 1) if $isdst;
+	my $age = $now - $ctime;
+	# $age = 0 if $age < 0;
+	next if $age < $opt_p;
+	if (rmdir($f)) {
+		print STDERR "$f was empty\n";
+		next;
+		}
+	my $agrp = 0;
+	my $abit = 16;
+	while ($abit) {
+		my $b = $age >> $abit;
+		$age = $b, $agrp += $abit if $b;
+		$abit >>= 1;
+		}
+	if ($opt_v) {
+		my $confirm = localtime($ctime);
+		print STDERR $f, ' -- ', $confirm, " ", $isdst ? "DST" : "normal", " -- group $agrp\n";
+		}
+	if ($kage{$agrp}) {
+		if ($kage{$agrp} > $ctime) {
+			push (@toss, $kfile{$agrp});
+			}
+		else {
+			push (@toss, $f);
+			next;
+			}
+		}
+	$kage{$agrp} = $ctime;
+	$kfile{$agrp} = $f;
+	}
+
+if ($#toss == -1) {
+	print STDERR "Nothing to purge.\n";
+	}
+
+print STDERR "+ rm -rf ", join(' ', sort(@toss)), "\n" if $opt_v;
+system ('/bin/rm', '-rf', @toss) && print STDERR "rm failed\n";
+
