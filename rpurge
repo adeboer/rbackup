@@ -2,7 +2,7 @@
 
 #    rpurge - expire rbackup backups
 #
-#    Copyright (C) 2001,2003 Anthony de Boer
+#    Copyright (C) 2001,2003,2004 Anthony de Boer
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of version 2 of the GNU General Public License as
@@ -19,10 +19,10 @@
 
 use strict;
 use POSIX;
-use vars qw($opt_p $opt_v);
-require 'getopts.pl';
+use Getopt::Std;
 
-&Getopts('p:v') || die "Usage: [-p PROTECT] [-v] [dir]\n";
+my %opts;
+getopts('p:v', \%opts) || die "Usage: [-p PROTECT] [-v] [dir]\n";
 
 my $dir = shift(@ARGV) || '.';
 chdir($dir) || die "Cannot cd $dir: $!\n";
@@ -32,7 +32,7 @@ my @toss;
 my %kfile;
 my %kage;
 
-$opt_p = 7200 unless $opt_p;
+$opts{'p'} = 7200 unless $opts{'p'};
 
 if (-d 'old') {
 	chdir('old') || die "Cannot cd into \'old\': $!\n";
@@ -47,7 +47,7 @@ for my $f (readdir(D)) {
 	$ctime = POSIX::mktime(@targ, 0, 0, 1) if $isdst;
 	my $age = $now - $ctime;
 	# $age = 0 if $age < 0;
-	next if $age < $opt_p;
+	next if $age < $opts{'p'};
 	if (rmdir($f)) {
 		print STDERR "$f was empty\n";
 		next;
@@ -59,7 +59,7 @@ for my $f (readdir(D)) {
 		$age = $b, $agrp += $abit if $b;
 		$abit >>= 1;
 		}
-	if ($opt_v) {
+	if ($opts{'v'}) {
 		my $confirm = localtime($ctime);
 		print STDERR $f, ' -- ', $confirm, " ", $isdst ? "DST" : "normal", " -- group $agrp\n";
 		}
@@ -80,6 +80,6 @@ if ($#toss == -1) {
 	print STDERR "Nothing to purge.\n";
 	}
 
-print STDERR "+ rm -rf ", join(' ', sort(@toss)), "\n" if $opt_v;
+print STDERR "+ rm -rf ", join(' ', sort(@toss)), "\n" if $opts{'v'};
 system ('/bin/rm', '-rf', @toss) && print STDERR "rm failed\n";
 
