@@ -1,0 +1,10 @@
+in whence:
+
+--exclude-from ../excl host:/path/
+
+in excl:
+
+- images/*
+- tmp/*
+
+(Need to anchor patterns...)
