@@ -1,12 +1,11 @@
 GPL
-INSTALL
 MANIFEST
 Makefile
 README
-contrib
-contrib/redhat-rpm
-contrib/redhat-rpm/rbackup.spec
+TODO
+rapprove
 rbackup
 rbackup.1
 rpurge
 rpurge.1
+rreview

@@ -28,19 +28,25 @@ If the working directory has a subdirectory named
 then rpurge will descend into it and do its work there.  Note that if this
 feature is used, all snapshots must be moved there or they would never be
 considered for purging.
+.PP
+This command understands simple symlinks to snapshots (containing no
+slashes and pointing directly at a snapshot 
+subdirectory) found in the same directory, and will protect them from
+removal.  Example:
+.I ln -s YYYYMMDD-HHMM-XYZ keepme
 .SH OPTIONS
 .TP
 .B -v
 Output verboseness to STDERR.
 .TP
 .B -p SECONDS
-Sets the number of seconds that an empty backup subdirectory is allowed
-to live; default is 7200 (two hours).  This is significant in case
+Sets the number of seconds for which all recent backups are protected.
+Default is 7200 (two hours).  This is significant in case
 rbackup is still running; if an older empty directory is found it is
 assumed that rbackup failed that time and the directory is removed.
 .SH SEE ALSO
 .IR rbackup (1)
 .SH AUTHOR
-Anthony de Boer <rbackup@leftmind.net>
+Anthony de Boer <adb@leftmind.net>
 .PP
 http://www.leftmind.net/projects/rbackup/

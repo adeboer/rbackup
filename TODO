@@ -1,8 +1,6 @@
 rbackup TODO
 ------------
 
-Generalize makefile; all the world isn't Red Hat.
-
-"Review" feature; diff -r between last good-reviewed snapshot and latest
-snapshot, plus "approval" moving the pointer up to this snapshot.
-Protect the reviewed snapshot from rpurge.
+Generalize install procedure.  Earlier versions assumed an RPM was to be
+built, current version does a simple traditional install in
+/usr/local/bin.

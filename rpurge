@@ -2,7 +2,7 @@
 
 #    rpurge - expire rbackup backups
 #
-#    Copyright (C) 2001,2003,2004 Anthony de Boer
+#    Copyright (C) 2001,2003,2004,2006 Anthony de Boer
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of version 2 of the GNU General Public License as
@@ -31,6 +31,9 @@ my $now = time;
 my @toss;
 my %kfile;
 my %kage;
+my %kprot;
+my @backs;
+my %linked;
 
 $opts{'p'} = 7200 unless $opts{'p'};
 
@@ -40,6 +43,16 @@ if (-d 'old') {
 
 opendir(D, '.') || die "opendir .";
 for my $f (readdir(D)) {
+	if (-l $f) {
+		my $r = readlink($f);
+		$linked{$r} = 1 if defined($r);
+		}
+	elsif (-d _) {
+		push(@backs, $f);
+		}
+	}
+
+for my $f (@backs) {
 	next unless $f =~ /^(\d\d\d\d)(\d\d)(\d\d)\-(\d\d)(\d\d)[\d\-]*$/;
 	my @targ = (0, $5, $4, $3, $2 - 1, $1 - 1900);
 	my $ctime = POSIX::mktime(@targ);
@@ -63,9 +76,14 @@ for my $f (readdir(D)) {
 		my $confirm = localtime($ctime);
 		print STDERR $f, ' -- ', $confirm, " ", $isdst ? "DST" : "normal", " -- group $agrp\n";
 		}
+	my $nt1 = 0;
+	if ($linked{$f}) {
+		print STDERR "$f linked\n" if $opts{'v'};
+		$nt1 = 1;
+		}
 	if ($kage{$agrp}) {
-		if ($kage{$agrp} > $ctime) {
-			push (@toss, $kfile{$agrp});
+		if ($kage{$agrp} > $ctime || $nt1) {
+			push (@toss, $kfile{$agrp}) unless $kprot{$agrp};
 			}
 		else {
 			push (@toss, $f);
@@ -74,12 +92,13 @@ for my $f (readdir(D)) {
 		}
 	$kage{$agrp} = $ctime;
 	$kfile{$agrp} = $f;
+	$kprot{$agrp} = $nt1;
 	}
 
 if ($#toss == -1) {
 	print STDERR "Nothing to purge.\n";
 	}
-
-print STDERR "+ rm -rf ", join(' ', sort(@toss)), "\n" if $opts{'v'};
-system ('/bin/rm', '-rf', @toss) && print STDERR "rm failed\n";
-
+else {
+	print STDERR "+ rm -rf ", join(' ', sort(@toss)), "\n" if $opts{'v'};
+	system ('/bin/rm', '-rf', @toss) && print STDERR "rm failed\n";
+	}
