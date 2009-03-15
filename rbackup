@@ -65,8 +65,8 @@ if (open(STDIN, "-|")) {
 	close(STDIN) || die "Find failed.\n";
 	}
 else {
-	print STDERR "+ find -print0\n" if $opts{'v'};
-	exec(qw/find -print0/);
+	print STDERR "+ find -depth -print0\n" if $opts{'v'};
+	exec(qw/find -depth -print0/);
 	die "Failed to exec find: $!\n";
 	}
 
