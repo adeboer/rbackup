@@ -4,3 +4,7 @@ rbackup TODO
 Generalize install procedure.  Earlier versions assumed an RPM was to be
 built, current version does a simple traditional install in
 /usr/local/bin.
+
+Use --link-dest.
+
+STDERR from rsync in realtime.
