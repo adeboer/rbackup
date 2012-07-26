@@ -5,5 +5,9 @@ Generalize install procedure.  Earlier versions assumed an RPM was to be
 built, current version does a simple traditional install in
 /usr/local/bin.
 
+Use --link-dest.
+
+STDERR from rsync in realtime.
+
 Rsync should ensure owner rwx in target; some sources have funny perms
 and can stop rpurge et al.
