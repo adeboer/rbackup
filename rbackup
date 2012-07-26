@@ -49,7 +49,7 @@ if (open(RH, "-|")) {
 	close(RH) || die "Rsync failed.\n";
 	}
 else {
-	open(STDERR, '>&STDOUT') || die "Cannot dup stdout: $!\n";
+	# open(STDERR, '>&STDOUT') || die "Cannot dup stdout: $!\n";
 	my @rcmd = qw/rsync -a --delete/;
 	push (@rcmd, '-v') if $opts{'v'};
 	push (@rcmd, @whence, './');
