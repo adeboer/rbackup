@@ -26,6 +26,7 @@ all:
 install:
 	install -m 0555 rbackup $(PREFIX)/bin/rbackup
 	install -m 0555 rpurge $(PREFIX)/bin/rpurge
+	mkdir -p $(PREFIX)/man/man1
 	install -m 0444 rbackup.1 $(PREFIX)/man/man1/rbackup.1
 	install -m 0444 rpurge.1 $(PREFIX)/man/man1/rpurge.1
 	install -m 0555 rreview $(PREFIX)/bin/rreview

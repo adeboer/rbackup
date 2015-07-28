@@ -8,3 +8,6 @@ built, current version does a simple traditional install in
 Use --link-dest.
 
 STDERR from rsync in realtime.
+
+Rsync should ensure owner rwx in target; some sources have funny perms
+and can stop rpurge et al.
