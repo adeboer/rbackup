@@ -37,6 +37,14 @@ my %linked;
 
 $opts{'p'} = 7200 unless $opts{'p'};
 
+if (-l 'current') {
+	my $r = readlink('current');
+	if (defined($r)) {
+		$r =~ s/^old\///;
+		$linked{$r} = 1;
+	}
+}
+
 if (-d 'old') {
 	chdir('old') || die "Cannot cd into \'old\': $!\n";
 	}
