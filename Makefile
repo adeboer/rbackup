@@ -17,7 +17,7 @@
 #	USA
 
 MYNAME = rbackup
-VERSION = 1.8
+VERSION = 2.0
 PV = $(MYNAME)-$(VERSION)
 PREFIX = /usr/local
 
