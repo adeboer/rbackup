@@ -104,7 +104,7 @@ for my $f (@backs) {
 	}
 
 if ($#toss == -1) {
-	print STDERR "Nothing to purge.\n";
+	print STDERR "Nothing to purge.\n" if $opts{'v'};
 } elsif ($opts{'w'}) {
 	my $wc = 0;
 	for my $t (@toss) {
