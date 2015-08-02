@@ -41,6 +41,13 @@ parent directory.
 This feature allows you to make a single clean exclusion when backing up
 the machine containing the rbackup respository and only wanting to put
 the currentmost on tape or CDROM.
+.PP
+Starting with version 2.0, the rsync --link-dest option is used rather
+than find/cpio, "current" is a symlink to the current snapshot, and an
+effort is made to update an expired snapshot to current rather than
+deleting the entire old tree and creating a whole new snapshot; this
+should improve efficiency and reduce filesystem hammering.  Note that
+expired snapshots may be seen renamed to "work.*" until recycled.
 .SH OPTIONS
 .TP
 .B -v
