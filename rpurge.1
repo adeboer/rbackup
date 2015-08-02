@@ -44,6 +44,12 @@ Sets the number of seconds for which all recent backups are protected.
 Default is 7200 (two hours).  This is significant in case
 rbackup is still running; if an older empty directory is found it is
 assumed that rbackup failed that time and the directory is removed.
+.TP
+.B -w
+Instead of deleting purged snapshots, rename them with a "work."
+suffix. This is used by
+.IR rbackup (1)
+to do snapshotting with minimal filesystem churn.
 .SH SEE ALSO
 .IR rbackup (1)
 .SH AUTHOR
