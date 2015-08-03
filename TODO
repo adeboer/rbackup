@@ -5,20 +5,9 @@ Generalize install procedure.  Earlier versions assumed an RPM was to be
 built, current version does a simple traditional install in
 /usr/local/bin.
 
-Use --link-dest.
-
-STDERR from rsync in realtime.
-
 Rsync should ensure owner rwx in target; some sources have funny perms
 and can stop rpurge et al.  Check if this is just u+rwx on directories
 and/or only if running non-root.
-
-Minimal filesystem recycling (reduce disk activity)
-- rpurge runs first, renames excess dirs to "work.xyz" or such
-- select one of those, create new dir only when needed
-- rsync --delete --delete-excluded --link-dest=$PWD/current/ $source $PWD/work.xyz/
-- rename work.xyz to timestamp if rsync succeeds
-- current to be a symlink?  Can rename() for atomic update.
 
 Should have a lockfile in case another cron instance comes along
 
