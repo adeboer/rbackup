@@ -55,7 +55,7 @@ if (-d 'old') {
 
 my $target = shift(@tx);
 
-my @rcmd = qw/rsync -aqH --delete/;
+my @rcmd = qw/rsync -aH --delete/;
 push (@rcmd, '-v') if $opts{'v'};
 push (@rcmd, '--link-dest', $current) if -d 'current';
 push (@rcmd, @whence, "$target/");
