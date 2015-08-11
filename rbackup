@@ -61,7 +61,7 @@ push (@rcmd, '--link-dest', $current) if -d 'current';
 push (@rcmd, @whence, "$target/");
 print STDERR join(' ', '+', @rcmd), "\n" if $opts{'v'};
 if (system(@rcmd)) {
-	die "Failed to exec rsync: $!\n";
+	die "rsync failed\n";
 } else {
 	print STDERR "+ rename($target, $when)\n" if $opts{'v'};
 	rename($target, $when) || die "Cannot rename $target to $when: $!\n";
