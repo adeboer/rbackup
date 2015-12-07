@@ -1,0 +1,5 @@
+rbackup (2.0) unstable; urgency=low
+
+  * debian packaging
+
+ -- Anthony de Boer <adb@adb.ca>  Sat, 14 Nov 2015 13:37:47 -0500

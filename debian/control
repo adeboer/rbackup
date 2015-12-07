@@ -1,0 +1,11 @@
+Source: rbackup
+Section: devel
+Priority: extra
+Maintainer: Anthony de Boer <adb@adb.ca>
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.9.6
+
+Package: rbackup
+Architecture: all
+Depends: ${misc:Depends}, perl
+Description: backup utility
